@@ -1,0 +1,12 @@
+name: 'EAS Notify'
+description: 'Create a Slack message when EAS builds are ready'
+inputs:
+  easOutput:
+    description: 'Output of the EAS build command'
+    require: true
+  slackWebhook:
+    description: 'The webhook URL of your Slack app'
+    require: true
+runs:
+  using: 'node14'
+  main: 'dist/index.js'
