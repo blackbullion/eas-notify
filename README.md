@@ -35,7 +35,7 @@ jobs:
           echo "::set-output name=log::$(cat eas.log)"
 
       - name: Notify
-        uses: blackbullion/eas-notify
+        uses: blackbullion/eas-notify@main
         with:
           easOutput: steps.build.outputs.log
           slackWebhook: ${{ secrets.SLACK_WEBHOOK }}
