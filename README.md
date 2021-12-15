@@ -32,12 +32,11 @@ jobs:
         id: build
         run: |
           npx eas-cli build --non-interactive | tee eas.log
-          echo "::set-output name=log::$(cat eas.log)"
 
       - name: Notify
         uses: blackbullion/eas-notify@main
         with:
-          easOutput: steps.build.outputs.log
+          easOutputFile: 'eas.log'
           slackWebhook: ${{ secrets.SLACK_WEBHOOK }}
 
 ```
