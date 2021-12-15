@@ -4739,11 +4739,12 @@ const axios = __nccwpck_require__(6545)
 
 const main = async () => {
   try {
-    const content = core.getInput('easOutput').split('\n')
+    const content = (await fs.readFile(core.getInput('easOutputFile'), 'utf8')).split('\n')
+
     const androidBuild = content.find((line) => line.startsWith('🤖 Android build details:')).split(': ')[1]
     const iosBuild = content.find((line) => line.startsWith('🍎 iOS build details:')).split(': ')[1]
     
-    const blocks = (await fs.readFile('./blocks.json', 'utf8'))
+    const blocks = (await fs.readFile('blocks.json', 'utf8'))
       .replace('$ANDROID_BUILD', androidBuild)
       .replace('$IOS_BUILD', iosBuild)
 
