@@ -36,7 +36,7 @@ jobs:
       - name: Notify
         uses: blackbullion/eas-notify@main
         with:
-          easOutputFile: 'eas.log'
+          easOutputFile: './eas.log'
           slackWebhook: ${{ secrets.SLACK_WEBHOOK }}
 
 ```
