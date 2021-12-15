@@ -4780,16 +4780,19 @@ const blocksConfig = {
 	]
 }
 
+const androidLinkSearch = '🤖 Android build details: '
+const iosLinkSearch = '🍎 iOS build details: '
+
 const main = async () => {
   try {
     const content = (await fs.readFile(core.getInput('easOutputFile'), 'utf8')).split('\n')
 
-    const androidBuild = content.find((line) => line.startsWith('🤖 Android build details:')).split(': ')[1]
-    const iosBuild = content.find((line) => line.startsWith('🍎 iOS build details:')).split(': ')[1]
+    const androidLink = content.find((line) => line.startsWith(androidLinkSearch)).split(androidLinkSearch)[1]
+    const iosLink = content.find((line) => line.startsWith(iosLinkSearch)).split(iosLinkSearch)[1]
     
     const blocks = JSON.stringify(blocksConfig)
-      .replace('$ANDROID_BUILD', androidBuild)
-      .replace('$IOS_BUILD', iosBuild)
+      .replace('$ANDROID_LINK', androidLink)
+      .replace('$IOS_LINK', iosLink)
 
     await axios.post(core.getInput('slackWebhook'), blocks, {
       Headers: {
