@@ -54,37 +54,44 @@ const main = async () => {
   try {
     const content = (await fs.readFile(core.getInput('easOutputFile'), 'utf8')).split('\n')
 
-    const androidLink = content.find((line) => line.includes(androidLinkSearch)).split(androidLinkSearch)[1]
-    const iosLink = content.find((line) => line.includes(iosLinkSearch)).split(iosLinkSearch)[1]
+    const androidLink = content.find((line) => line.includes(androidLinkSearch))?.split(androidLinkSearch)[1]
+    const iosLink = content.find((line) => line.includes(iosLinkSearch))?.split(iosLinkSearch)[1]
 
-		const androidBuilt = androidLink && !content.find((line) => line.includes(androidCancelledSearch))
-		const iosBuilt = iosLink && !content.find((line) => line.includes(iosCancelledSearch))
+		const androidBuilt = Boolean(androidLink && !content.find((line) => line.includes(androidCancelledSearch)))
+		const iosBuilt = Boolean(iosLink && !content.find((line) => line.includes(iosCancelledSearch)))
 
 		if (!androidBuilt && !iosBuilt) {
 			core.info('No builds were completed. Skipping message.')
 			return
 		}
 
+		let blocks = blocksConfig.blocks
+
 		if (androidBuilt) {
-			blocksConfig.blocks = [...blocksConfig.blocks, androidBuildBlock]
+			blocks = [...blocks, androidBuildBlock]
 		}
 		if (iosBuilt) {
-			if (androidBuilt) blocksConfig.blocks = [...blocksConfig.blocks, { type: 'divider' }]
-			blocksConfig.blocks = [...blocksConfig.blocks, iosBuildBlock]
+			if (androidBuilt) blocks = [...blocks, { type: 'divider' }]
+			blocks = [...blocks, iosBuildBlock]
 		}
     
-    const blocks = JSON.stringify(blocksConfig)
+    const data = JSON.stringify({ blocks })
       .replace('$ANDROID_LINK', androidLink)
       .replace('$IOS_LINK', iosLink)
 
-    await axios.post(core.getInput('slackWebhook'), blocks, {
+    await axios.post(core.getInput('slackWebhook'), data, {
       Headers: {
         Accept: 'application/json'
       }
     })
   } catch (error) {
+		console.error(error)
     core.setFailed(error.message)
   }
 }
 
-main()
+if (process.env.CI) {
+	main()
+}
+
+module.exports = main

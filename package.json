@@ -4,10 +4,12 @@
     "axios": "^0.24.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.28.5"
+    "@vercel/ncc": "^0.28.5",
+    "jest": "^27.4.5"
   },
   "scripts": {
-    "build": "ncc build index.js --license licenses.txt"
+    "build": "ncc build index.js --license licenses.txt",
+    "test": "jest"
   },
   "license": "MIT"
 }
