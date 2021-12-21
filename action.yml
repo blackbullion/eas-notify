@@ -8,5 +8,5 @@ inputs:
     description: 'The webhook URL of your Slack app'
     require: true
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'dist/index.js'

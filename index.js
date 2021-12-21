@@ -67,9 +67,7 @@ const main = async () => {
 
 		let blocks = blocksConfig.blocks
 
-		if (androidBuilt) {
-			blocks = [...blocks, androidBuildBlock]
-		}
+		if (androidBuilt) blocks = [...blocks, androidBuildBlock]
 		if (iosBuilt) {
 			if (androidBuilt) blocks = [...blocks, { type: 'divider' }]
 			blocks = [...blocks, iosBuildBlock]
@@ -90,7 +88,7 @@ const main = async () => {
   }
 }
 
-if (process.env.CI) {
+if (process.env.CI) { // ignore in tests
 	main()
 }
 
