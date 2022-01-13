@@ -88,7 +88,7 @@ const main = async () => {
   }
 }
 
-if (process.env.CI) { // ignore in tests
+if (process.env.GITHUB_ACTION) { // only run in CI
 	main()
 }
 
