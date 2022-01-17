@@ -51,20 +51,27 @@ const iosBuildBlock = {
 }
 
 const androidLinkSearch = '🤖 Android build details: '
-const iosLinkSearch = '🍎 iOS build details: '
-
 const androidCancelledSearch = '🤖 Android build was canceled'
+const androidFailedSearch = '🤖 Android build failed'
+
+const iosLinkSearch = '🍎 iOS build details: '
 const iosCancelledSearch = '🍎 iOS build was canceled'
+const iosFailedSearch = '🍎 iOS build failed'
+
+function getPlatformBuilt(content, linkSearch, cancelledSearch, failedSearch) {
+	const link = content.find((line) => line.includes(linkSearch))?.split(linkSearch)[1]
+	const cancelledText = content.some((line) => line.includes(cancelledSearch))
+	const failedText = content.some((line) => line.includes(failedSearch))
+
+	return [link && !cancelledText && !failedText, link]
+}
 
 const main = async () => {
   try {
     const content = (await fs.readFile(core.getInput('easOutputFile'), 'utf8')).split('\n')
 
-    const androidLink = content.find((line) => line.includes(androidLinkSearch))?.split(androidLinkSearch)[1]
-    const iosLink = content.find((line) => line.includes(iosLinkSearch))?.split(iosLinkSearch)[1]
-
-		const androidBuilt = Boolean(androidLink && !content.find((line) => line.includes(androidCancelledSearch)))
-		const iosBuilt = Boolean(iosLink && !content.find((line) => line.includes(iosCancelledSearch)))
+		const [androidBuilt, androidLink] = getPlatformBuilt(content, androidLinkSearch, androidCancelledSearch, androidFailedSearch)
+		const [iosBuilt, iosLink] = getPlatformBuilt(content, iosLinkSearch, iosCancelledSearch, iosFailedSearch)
 
 		if (!androidBuilt && !iosBuilt) {
 			core.info('No builds were completed. Skipping message.')
