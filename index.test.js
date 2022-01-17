@@ -234,4 +234,95 @@ describe('EAS Build Alert', () => {
 
     expect(axios.post).not.toHaveBeenCalled()
   })
+
+  it('should correctly exclude android if the build failed', async () => {
+    fs.readFile.mockResolvedValue(`
+      2021-12-15T10:02:59.2560145Z 🤖 Android build failed
+      2021-12-15T10:02:59.2560145Z 🍎 iOS build details: https://expo.dev/bb/ios-build
+    `)
+
+    await action()
+
+    expect(axios.post).toHaveBeenCalledWith('', JSON.stringify({
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: '🚨 New app builds'
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'Scan the QR codes to install them.'
+          }
+        },
+        {
+          type: 'divider'
+        },
+        {
+          type: 'image',
+          image_url: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://expo.dev/bb/ios-build',
+          alt_text: 'iOS app build',
+          title: {
+            type: 'plain_text',
+            text: '🍎 iOS'
+          }
+        }
+      ]
+    }), headers)
+  })
+
+  it('should correctly exclude ios if the build failed', async () => {
+    fs.readFile.mockResolvedValue(`
+      2021-12-15T10:02:59.2552837Z 🤖 Android build details: https://expo.dev/bb/android-build
+      2021-12-15T10:02:59.2560145Z 🍎 iOS build failed
+    `)
+
+    await action()
+
+    expect(axios.post).toHaveBeenCalledWith('', JSON.stringify({
+      blocks: [
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: '🚨 New app builds'
+          }
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'Scan the QR codes to install them.'
+          }
+        },
+        {
+          type: 'divider'
+        },
+        {
+          type: 'image',
+          image_url: 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://expo.dev/bb/android-build',
+          alt_text: 'Android app build',
+          title: {
+            type: 'plain_text',
+            text: '🤖 Android'
+          }
+        }
+      ]
+    }), headers)
+  })
+
+  it('should skip sending a notification if both builds failed', async () => {
+    fs.readFile.mockResolvedValue(`
+      2021-12-15T10:02:59.2552837Z 🤖 Android build failed
+      2021-12-15T10:02:59.2560145Z 🍎 iOS build failed
+    `)
+
+    await action()
+
+    expect(axios.post).not.toHaveBeenCalled()
+  })
 })
