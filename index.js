@@ -54,8 +54,8 @@ const iosFailedSearch = '🍎 iOS build failed'
 
 function getPlatformBuilt(content, linkSearch, cancelledSearch, failedSearch) {
 	const link = content.find((line) => line.includes(linkSearch))?.split(linkSearch)[1]
-	const cancelledText = content.find((line) => line.includes(cancelledSearch))
-	const failedText = content.find((line) => line.includes(failedSearch))
+	const cancelledText = content.some((line) => line.includes(cancelledSearch))
+	const failedText = content.some((line) => line.includes(failedSearch))
 
 	return [link && !cancelledText && !failedText, link]
 }
